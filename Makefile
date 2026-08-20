@@ -109,7 +109,7 @@ dir_logger:
 
 dir_addrgen:	dir_cmdparse dir_addressutil dir_secp256k1lib
 	make --directory AddrGen
-dir_clunittest:	dir_clutil
+dir_clunittest:	dir_embedcl dir_clutil
 	make --directory CLUnitTests
 
 clean:
