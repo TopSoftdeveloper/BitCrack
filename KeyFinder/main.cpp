@@ -127,9 +127,9 @@ void statusCallback(KeySearchStatus info)
     std::string targetStr = util::format(info.targets) + " target" + (info.targets > 1 ? "s" : "");
 
 
-	// Fit device name in 16 characters, pad with spaces if less
-	std::string devName = info.deviceName.substr(0, 16);
-	devName += std::string(16 - devName.length(), ' ');
+	// Fit device name in 24 characters, pad with spaces if less
+	std::string devName = info.deviceName.substr(0, 24);
+	devName += std::string(24 - devName.length(), ' ');
 
     const char *formatStr = NULL;
 
