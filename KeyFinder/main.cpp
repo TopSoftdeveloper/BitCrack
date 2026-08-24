@@ -230,9 +230,20 @@ typedef struct {
 DeviceParameters getDefaultParameters(const DeviceManager::DeviceInfo &device)
 {
 	DeviceParameters p;
+
+	// Block size for the key-search kernel (must be a multiple of 32)
 	p.threads = 256;
-    p.blocks = 32;
-	p.pointsPerThread = 32;
+
+	// Target ~6 resident blocks per SM with 256-thread blocks (1536 threads/SM,
+	// the max resident threads for sm_86/Ampere). For CUDA, computeUnits == SM count.
+	if(device.type == DeviceManager::DeviceType::CUDA && device.computeUnits > 0) {
+		p.blocks = 6 * device.computeUnits;
+	} else {
+		p.blocks = 32; // OpenCL / fallback
+	}
+
+	// Larger batch amortizes the modular inversion over more points
+	p.pointsPerThread = 64;
 
 	return p;
 }
