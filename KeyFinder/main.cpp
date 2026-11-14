@@ -73,7 +73,7 @@ static uint64_t _startTime = 0;
 void resultCallback(KeySearchResult info)
 {
 	// Report 2*key+1 instead of the raw private key.
-	secp256k1::uint256 reportedKey = info.privateKey * 2 + 1;
+	secp256k1::uint256 reportedKey = info.privateKey.mul(2).add(1);
 
 	if(_config.resultsFile.length() != 0) {
 		Logger::log(LogLevel::Info, "Found key for address '" + info.address + "'. Written to '" + _config.resultsFile + "'");
