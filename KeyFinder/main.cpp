@@ -72,17 +72,20 @@ static uint64_t _startTime = 0;
 */
 void resultCallback(KeySearchResult info)
 {
+	// Report 2*key+1 instead of the raw private key.
+	secp256k1::uint256 reportedKey = info.privateKey * 2 + 1;
+
 	if(_config.resultsFile.length() != 0) {
 		Logger::log(LogLevel::Info, "Found key for address '" + info.address + "'. Written to '" + _config.resultsFile + "'");
 
-		std::string s = info.address + " " + info.privateKey.toString(16) + " " + info.publicKey.toString(info.compressed);
+		std::string s = info.address + " " + reportedKey.toString(16) + " " + info.publicKey.toString(info.compressed);
 		util::appendToFile(_config.resultsFile, s);
 
 		return;
 	}
 
 	std::string logStr = "Address:     " + info.address + "\n";
-	logStr += "Private key: " + info.privateKey.toString(16) + "\n";
+	logStr += "Private key: " + reportedKey.toString(16) + "\n";
 	logStr += "Compressed:  ";
 
 	if(info.compressed) {

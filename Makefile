@@ -13,10 +13,17 @@ CXX=g++
 CXXFLAGS=-O3 -std=c++11
 
 # CUDA variables
-# RTX 3090 (Ampere) -> compute capability 8.6
-COMPUTE_CAP=86
+# H100 / H100 NVL (Hopper) -> compute capability 9.0. Requires CUDA 12.0+.
+# Other GPUs: make BUILD_CUDA=1 COMPUTE_CAP=86   (RTX 3090)
+#             make BUILD_CUDA=1 COMPUTE_CAP=89   (RTX 4090)
+#             make BUILD_CUDA=1 COMPUTE_CAP=80   (A100)
+COMPUTE_CAP=90
 NVCC=nvcc
-NVCCFLAGS=-std=c++11 -gencode=arch=compute_${COMPUTE_CAP},code=\"sm_${COMPUTE_CAP}\" -Xptxas="-v" -Xcompiler "${CXXFLAGS}"
+# code=sm_* is the native cubin. code=compute_* embeds PTX so the module
+# still registers device symbols if the driver has to JIT. Quoted code=
+# values are dropped by the shell and nvcc silently keeps a default arch,
+# which then fails at runtime with "invalid device symbol".
+NVCCFLAGS=-std=c++11 -gencode=arch=compute_${COMPUTE_CAP},code=sm_${COMPUTE_CAP} -gencode=arch=compute_${COMPUTE_CAP},code=compute_${COMPUTE_CAP} -Xptxas="-v" -Xcompiler "${CXXFLAGS}"
 CUDA_HOME=/usr/local/cuda
 CUDA_LIB=${CUDA_HOME}/lib64
 CUDA_INCLUDE=${CUDA_HOME}/include
